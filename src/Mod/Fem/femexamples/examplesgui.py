@@ -32,7 +32,7 @@ from importlib import import_module
 
 from PySide import QtCore
 from PySide import QtGui
-
+from itertools import product
 import FreeCADGui
 
 
@@ -82,20 +82,21 @@ class FemExamples(QtGui.QWidget):
             module = import_module("femexamples." + f)
             if hasattr(module, "get_information"):
                 info = getattr(module, "get_information")()
-                files_info[f] = info
-                self.files_name[info["name"]] = f
-                meshtypes.add(info["meshtype"])
-                mesheles.add(info["meshelement"])
-                file_equations = info["equations"]
-                for equation in file_equations:
-                    equations.add(equation)
-                materials.add(info["material"])
-                file_solvers = info["solvers"]
-                for solver in file_solvers:
-                    solvers.add(solver)
-                file_constraints = info["constraints"]
-                for constraint in file_constraints:
-                    constraints.add(constraint)
+                if info["name"] == "run me":
+                    files_info[f] = info
+                    self.files_name[info["name"]] = f
+                    meshtypes.add(info["meshtype"])
+                    mesheles.add(info["meshelement"])
+                    file_equations = info["equations"]
+                    for equation in file_equations:
+                        equations.add(equation)
+                    materials.add(info["material"])
+                    file_solvers = info["solvers"]
+                    for solver in file_solvers:
+                        solvers.add(solver)
+                    file_constraints = info["constraints"]
+                    for constraint in file_constraints:
+                        constraints.add(constraint)
 
         constraints = sorted(constraints)
         meshtypes = sorted(meshtypes)
@@ -104,61 +105,61 @@ class FemExamples(QtGui.QWidget):
         equations = sorted(equations)
         materials = sorted(materials)
 
-        all_examples = QtGui.QTreeWidgetItem(self.view, ["All"])
+        # all_examples = QtGui.QTreeWidgetItem(self.view, ["All"])
         for example, info in files_info.items():
-            QtGui.QTreeWidgetItem(all_examples, [info["name"]])
-        self.view.addTopLevelItem(all_examples)
+            QtGui.QTreeWidgetItem(self.view, [info["name"]])
+        # self.view.addTopLevelItem(self.view)
 
-        all_constraints = QtGui.QTreeWidgetItem(self.view, ["Constraints"])
-        for constraint in constraints:
-            constraint_item = QtGui.QTreeWidgetItem(all_constraints, [constraint])
-            for example, info in files_info.items():
-                file_constraints = info["constraints"]
-                if constraint in file_constraints:
-                    QtGui.QTreeWidgetItem(constraint_item, [info["name"]])
-        self.view.addTopLevelItem(all_constraints)
+        # all_constraints = QtGui.QTreeWidgetItem(self.view, ["Constraints"])
+        # for constraint in constraints:
+        #     constraint_item = QtGui.QTreeWidgetItem(all_constraints, [constraint])
+        #     for example, info in files_info.items():
+        #         file_constraints = info["constraints"]
+        #         if constraint in file_constraints:
+        #             QtGui.QTreeWidgetItem(constraint_item, [info["name"]])
+        # self.view.addTopLevelItem(all_constraints)
 
-        all_equations = QtGui.QTreeWidgetItem(self.view, ["Equations"])
-        for equation in equations:
-            equation_item = QtGui.QTreeWidgetItem(all_equations, [equation])
-            for example, info in files_info.items():
-                file_equations = info["equations"]
-                if equation in file_equations:
-                    QtGui.QTreeWidgetItem(equation_item, [info["name"]])
-        self.view.addTopLevelItem(all_equations)
+        # all_equations = QtGui.QTreeWidgetItem(self.view, ["Equations"])
+        # for equation in equations:
+        #     equation_item = QtGui.QTreeWidgetItem(all_equations, [equation])
+        #     for example, info in files_info.items():
+        #         file_equations = info["equations"]
+        #         if equation in file_equations:
+        #             QtGui.QTreeWidgetItem(equation_item, [info["name"]])
+        # self.view.addTopLevelItem(all_equations)
 
-        all_materials = QtGui.QTreeWidgetItem(self.view, ["Materials"])
-        for material in materials:
-            material_item = QtGui.QTreeWidgetItem(all_materials, [material])
-            for example, info in files_info.items():
-                if info["material"] == material:
-                    QtGui.QTreeWidgetItem(material_item, [info["name"]])
-        self.view.addTopLevelItem(all_materials)
+        # all_materials = QtGui.QTreeWidgetItem(self.view, ["Materials"])
+        # for material in materials:
+        #     material_item = QtGui.QTreeWidgetItem(all_materials, [material])
+        #     for example, info in files_info.items():
+        #         if info["material"] == material:
+        #             QtGui.QTreeWidgetItem(material_item, [info["name"]])
+        # self.view.addTopLevelItem(all_materials)
 
-        all_meshtypes = QtGui.QTreeWidgetItem(self.view, ["MeshTypes"])
-        for mesh in meshtypes:
-            mesh_item = QtGui.QTreeWidgetItem(all_meshtypes, [mesh])
-            for example, info in files_info.items():
-                if info["meshtype"] == mesh:
-                    QtGui.QTreeWidgetItem(mesh_item, [info["name"]])
-        self.view.addTopLevelItem(all_meshtypes)
+        # all_meshtypes = QtGui.QTreeWidgetItem(self.view, ["MeshTypes"])
+        # for mesh in meshtypes:
+        #     mesh_item = QtGui.QTreeWidgetItem(all_meshtypes, [mesh])
+        #     for example, info in files_info.items():
+        #         if info["meshtype"] == mesh:
+        #             QtGui.QTreeWidgetItem(mesh_item, [info["name"]])
+        # self.view.addTopLevelItem(all_meshtypes)
 
-        all_mesheles = QtGui.QTreeWidgetItem(self.view, ["MeshElements"])
-        for mesh in mesheles:
-            mesh_item = QtGui.QTreeWidgetItem(all_mesheles, [mesh])
-            for example, info in files_info.items():
-                if info["meshelement"] == mesh:
-                    QtGui.QTreeWidgetItem(mesh_item, [info["name"]])
-        self.view.addTopLevelItem(all_mesheles)
+        # all_mesheles = QtGui.QTreeWidgetItem(self.view, ["MeshElements"])
+        # for mesh in mesheles:
+        #     mesh_item = QtGui.QTreeWidgetItem(all_mesheles, [mesh])
+        #     for example, info in files_info.items():
+        #         if info["meshelement"] == mesh:
+        #             QtGui.QTreeWidgetItem(mesh_item, [info["name"]])
+        # self.view.addTopLevelItem(all_mesheles)
 
-        all_solvers = QtGui.QTreeWidgetItem(self.view, ["Solvers"])
-        for solver in solvers:
-            solver_item = QtGui.QTreeWidgetItem(all_solvers, [solver])
-            for example, info in files_info.items():
-                file_solvers = info["solvers"]
-                if solver in file_solvers:
-                    QtGui.QTreeWidgetItem(solver_item, [info["name"]])
-        self.view.addTopLevelItem(all_solvers)
+        # all_solvers = QtGui.QTreeWidgetItem(self.view, ["Solvers"])
+        # for solver in solvers:
+        #     solver_item = QtGui.QTreeWidgetItem(all_solvers, [solver])
+        #     for example, info in files_info.items():
+        #         file_solvers = info["solvers"]
+        #         if solver in file_solvers:
+        #             QtGui.QTreeWidgetItem(solver_item, [info["name"]])
+        # self.view.addTopLevelItem(all_solvers)
 
         self.view.setHeaderHidden(True)
         self.view.itemClicked.connect(self.enable_buttons)
@@ -167,9 +168,9 @@ class FemExamples(QtGui.QWidget):
         # Ok buttons:
         self.button_box = QtGui.QDialogButtonBox(self)
         self.button_box.setOrientation(QtCore.Qt.Horizontal)
-        self.setup_button = QtGui.QPushButton(QtGui.QIcon.fromTheme("document-new"), "Setup")
-        self.setup_button.setEnabled(False)
-        self.button_box.addButton(self.setup_button, QtGui.QDialogButtonBox.AcceptRole)
+        # self.setup_button = QtGui.QPushButton(QtGui.QIcon.fromTheme("document-new"), "Setup")
+        # self.setup_button.setEnabled(False)
+        # self.button_box.addButton(self.setup_button, QtGui.QDialogButtonBox.AcceptRole)
         self.run_button = QtGui.QPushButton(QtGui.QIcon.fromTheme("system-run"), "Run")
         self.run_button.setEnabled(False)
         self.button_box.addButton(self.run_button, QtGui.QDialogButtonBox.ApplyRole)
@@ -184,9 +185,9 @@ class FemExamples(QtGui.QWidget):
         self.setLayout(layout)
 
     def clicked(self, button):
-        if self.button_box.buttonRole(button) == QtGui.QDialogButtonBox.AcceptRole:
-            self.accept()
-        elif self.button_box.buttonRole(button) == QtGui.QDialogButtonBox.ApplyRole:
+        # if self.button_box.buttonRole(button) == QtGui.QDialogButtonBox.AcceptRole:
+        #     self.accept()
+        if self.button_box.buttonRole(button) == QtGui.QDialogButtonBox.ApplyRole:
             self.run()
         elif self.button_box.buttonRole(button) == QtGui.QDialogButtonBox.RejectRole:
             self.reject()
@@ -247,16 +248,16 @@ class FemExamples(QtGui.QWidget):
         sel_item_text = self.view.selectedItems()[0].text(0)
         if sel_item_text in self.files_name:
             self.run_button.setEnabled(True)
-            self.setup_button.setEnabled(True)
+            # self.setup_button.setEnabled(True)
         else:
             self.run_button.setEnabled(False)
-            self.setup_button.setEnabled(False)
+            # self.setup_button.setEnabled(False)
 
     def double_clicked(self):
         # setup an example when it is double clicked
         sel_item_text = self.view.selectedItems()[0].text(0)
         if sel_item_text in self.files_name:
-            self.accept()
+            self.run()
 
 
 def show_examplegui():

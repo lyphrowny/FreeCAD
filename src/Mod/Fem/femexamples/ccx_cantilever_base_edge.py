@@ -31,35 +31,49 @@ from .manager import get_meshname
 from .manager import init_doc
 
 
-def setup_cantilever_base_edge(doc=None, solvertype="ccxtools"):
+def create_nodes(femmesh, x, y, z):
+    # nodes
+    femmesh.addNode(0,0,0,1)
+    femmesh.addNode(x,y,z,2)
+    femmesh.addNode(x//2, y//2, z//2,3)
+    return True
+
+
+def create_elements(femmesh):
+    # elements
+    femmesh.addEdge([1, 2,3], 1)
+    return True
+
+
+def setup_cantilever_base_edge(x,y,z,doc=None, solvertype="ccxtools"):
 
     # init FreeCAD document
     if doc is None:
         doc = init_doc()
 
-    # geometric objects
-    # load line
-    load_line = doc.addObject("Part::Line", "LoadLine")
-    load_line.X1 = 0
-    load_line.Y1 = 0
-    load_line.Z1 = 1000
-    load_line.X2 = 0
-    load_line.Y2 = 0
-    load_line.Z2 = 0
+    # # geometric objects
+    # # load line
+    # load_line = doc.addObject("Part::Line", "LoadLine")
+    # load_line.X1 = 0
+    # load_line.Y1 = 0
+    # load_line.Z1 = 10
+    # load_line.X2 = 0
+    # load_line.Y2 = 0
+    # load_line.Z2 = 0
 
     # cantilever line
     geom_obj = doc.addObject("Part::Line", "CantileverLine")
     geom_obj.X1 = 0
-    geom_obj.Y1 = 500
-    geom_obj.Z1 = 500
-    geom_obj.X2 = 8000
-    geom_obj.Y2 = 500
-    geom_obj.Z2 = 500
+    geom_obj.Y1 = 0
+    geom_obj.Z1 = 0
+    geom_obj.X2 = x
+    geom_obj.Y2 = y
+    geom_obj.Z2 = z
 
     doc.recompute()
 
     if FreeCAD.GuiUp:
-        load_line.ViewObject.Visibility = False
+        # load_line.ViewObject.Visibility = False
         geom_obj.ViewObject.Document.activeView().viewAxonometric()
         geom_obj.ViewObject.Document.activeView().fitAll()
 
@@ -86,17 +100,22 @@ def setup_cantilever_base_edge(doc=None, solvertype="ccxtools"):
         solver_obj.MatrixSolverType = "default"
         solver_obj.IterationsControlParameterTimeUse = False
         solver_obj.SplitInputWriter = False
+        solver_obj.BeamShellResultOutput3D = True
     analysis.addObject(solver_obj)
 
     # beam section
     beamsection_obj = ObjectsFem.makeElementGeometry1D(
         doc,
         sectiontype="Rectangular",
-        width=1000.0,
-        height=1000.0,
+        width=1.0,
+        height=3.0,
         name="BeamCrossSection"
     )
     analysis.addObject(beamsection_obj)
+
+    rot = ObjectsFem.makeElementRotation1D(doc)
+    rot.Rotation = 0
+    analysis.addObject(rot)
 
     # material
     material_obj = ObjectsFem.makeMaterialSolid(doc, "MechanicalMaterial")
@@ -115,15 +134,14 @@ def setup_cantilever_base_edge(doc=None, solvertype="ccxtools"):
     # constraint force
     con_force = ObjectsFem.makeConstraintForce(doc, "ConstraintForce")
     con_force.References = [(geom_obj, "Vertex2")]
-    con_force.Force = "9000000.0 N" # 9 MN
-    con_force.Direction = (load_line, ["Edge1"])
+    con_force.Force = "1.0 N" # 9 MN
+    # con_force.Direction = (load_line, ["Edge1"])
     con_force.Reversed = False
     analysis.addObject(con_force)
 
     # mesh
-    from .meshes.mesh_canticcx_seg3 import create_nodes, create_elements
     fem_mesh = Fem.FemMesh()
-    control = create_nodes(fem_mesh)
+    control = create_nodes(fem_mesh, x, y ,z)
     if not control:
         FreeCAD.Console.PrintError("Error on creating nodes.\n")
     control = create_elements(fem_mesh)
@@ -134,8 +152,8 @@ def setup_cantilever_base_edge(doc=None, solvertype="ccxtools"):
     femmesh_obj.Part = geom_obj
     femmesh_obj.SecondOrderLinear = False
     femmesh_obj.ElementDimension = "1D"
-    femmesh_obj.CharacteristicLengthMax = "1750.0 mm"
-    femmesh_obj.CharacteristicLengthMin = "1750.0 mm"
+    femmesh_obj.CharacteristicLengthMax = "0.0 mm"
+    femmesh_obj.CharacteristicLengthMin = "0.0 mm"
 
     doc.recompute()
     return doc

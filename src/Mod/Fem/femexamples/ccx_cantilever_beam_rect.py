@@ -30,7 +30,7 @@ from .manager import init_doc
 
 def get_information():
     return {
-        "name": "CCX cantilever beam rectangle",
+        "name": "run me",
         "meshtype": "edge",
         "meshelement": "Seg3",
         "constraints": ["fixed", "force"],
@@ -76,7 +76,7 @@ CalculiX FEM max deflection:
 """
 
 
-def setup(doc=None, solvertype="ccxtools"):
+def setup(x,y,z,doc=None, solvertype="ccxtools"):
 
     # init FreeCAD document
     if doc is None:
@@ -86,26 +86,7 @@ def setup(doc=None, solvertype="ccxtools"):
     # just keep the following line and change text string in get_explanation method
     manager.add_explanation_obj(doc, get_explanation(manager.get_header(get_information())))
 
-    width = 400
-    height = 1250
-    cs_face = doc.addObject("Part::Plane", "CrossSectionFace")
-    cs_face.Width = width
-    cs_face.Length = height
-    cs_face.Placement = FreeCAD.Placement(
-        FreeCAD.Vector(0, 500 - 0.5 * width, 500 + 0.5 * height),
-        FreeCAD.Rotation(0, 90, 0),
-        FreeCAD.Vector(0, 0, 0),
-    )
-    doc.recompute()
-
     # setup CalculiX cantilever
-    doc = setup_cantilever_base_edge(doc, solvertype)
-    beamsection_obj = doc.getObject("BeamCrossSection")
-
-    # change cross section to a circular section
-    beamsection_obj.SectionType = "Rectangular"
-    beamsection_obj.RectWidth = width
-    beamsection_obj.RectHeight = height
-
+    doc = setup_cantilever_base_edge(x,y,z,doc, solvertype)
     doc.recompute()
     return doc

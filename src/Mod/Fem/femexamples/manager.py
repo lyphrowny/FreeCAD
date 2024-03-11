@@ -23,6 +23,7 @@
 # ***************************************************************************
 
 import FreeCAD
+from itertools import product
 
 
 # ************************************************************************************************
@@ -164,13 +165,15 @@ def run_analysis(doc, base_name, filepath="", run_solver=False):
     from femtools.femutils import get_beside_dir
     working_dir = get_beside_dir(solver)
 
+    ret_code =0
     # run analysis
     from femsolver.run import run_fem_solver
     if run_solver is True:
-        run_fem_solver(solver, working_dir)
+        ret_code = run_fem_solver(solver, working_dir)
 
     # save doc once again with results
     doc.save()
+    return ret_code
 
 
 def run_example(example, solver=None, base_name=None, run_solver=False):
@@ -181,8 +184,12 @@ def run_example(example, solver=None, base_name=None, run_solver=False):
         FreeCAD.Console.PrintError("Setup method not found in {}\n".format(example))
         return None
 
+    docs = []
     if solver is None:
-        doc = getattr(module, "setup")()
+        dirs = (0, -10, 10)
+        dirs = list(product(dirs,repeat=3))[1:]
+        for _dir in dirs:
+            docs.append((_dir, getattr(module, "setup")(*_dir)))
     else:
         doc = getattr(module, "setup")(solvertype=solver)
 
@@ -190,10 +197,17 @@ def run_example(example, solver=None, base_name=None, run_solver=False):
         base_name = example
         if solver is not None:
             base_name += "_" + solver
-    run_analysis(doc, base_name, run_solver=run_solver)
-    doc.recompute()
+    ret_codes = []
+    for _dir, d in docs:
+        ret_code = run_analysis(d, f"{_dir}_beam", run_solver=run_solver)
+        ret_codes.append((ret_code, _dir))
+        d.recompute()
 
-    return doc
+    for ret_code, _dir in ret_codes:
+        if ret_code:
+            FreeCAD.Console.PrintError(f"{_dir}\n")
+
+    return docs
 
 
 # ************************************************************************************************

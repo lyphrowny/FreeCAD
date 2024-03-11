@@ -99,13 +99,15 @@ def run_fem_solver(solver, working_dir=None):
         use a :class:`Machine`.
     """
 
+    ret_code = 0
     if solver.Proxy.Type == "Fem::SolverCcxTools":
         from femtools.ccxtools import CcxTools as ccx
         App.Console.PrintMessage("Run of CalxuliX ccx tools solver started.\n")
         fea = ccx(solver)
         fea.reset_mesh_purge_results_checked()
         if working_dir is None:
-            fea.run()  # standard, no working dir is given in solver
+            # returns True, when ok, while we treat 0 as OK
+            ret_code = not fea.run()  # standard, no working dir is given in solver
         else:
             # not the standard way
             fea.update_objects()
@@ -114,7 +116,7 @@ def run_fem_solver(solver, working_dir=None):
             message = fea.check_prerequisites()
             if not message:
                 fea.write_inp_file()
-                fea.ccx_run()
+                ret_code = fea.ccx_run()
                 fea.load_results()
             else:
                 App.Console.PrintError("Houston, we have a problem...!\n{}\n".format(message))
@@ -166,6 +168,7 @@ def run_fem_solver(solver, working_dir=None):
                     )
                     from .report import display
                     display(machine.report, "Run Report", error_message)
+    return ret_code
 
 
 def getMachine(solver, path=None):
