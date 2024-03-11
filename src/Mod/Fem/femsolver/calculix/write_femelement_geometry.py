@@ -57,8 +57,8 @@ def write_femelement_geometry(f, ccxwriter):
                     # |
                     # |
                     # v (m, 1-direction)
-                    len_beam_axis_m = beamsec_obj.RectHeight.getValueAs("mm").Value
-                    len_beam_axis_n = beamsec_obj.RectWidth.getValueAs("mm").Value
+                    len_beam_axis_n = beamsec_obj.RectHeight.getValueAs("mm").Value
+                    len_beam_axis_m = beamsec_obj.RectWidth.getValueAs("mm").Value
 
                     section_type = ", SECTION=RECT"
                     section_geo = "{:.13G},{:.13G}\n".format(len_beam_axis_m, len_beam_axis_n)

@@ -689,7 +689,7 @@ def get_beam_main_axis_m(beam_direction, defined_angle):
         # replace all the close-to-zero elements with 0 itself
         # I was getting values of 1e-17 order, hence the threshold is of 1e-15 order
         return FreeCAD.Vector([coord * (abs(coord) > 1e-15) for coord in rot])
-    return rotate_around_vector(beam_direction, defined_angle.Value)
+    return rotate_around_vector(beam_direction, defined_angle.Value - 90)
 
 
 # ************************************************************************************************
