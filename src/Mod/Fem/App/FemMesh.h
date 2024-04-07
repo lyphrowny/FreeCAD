@@ -26,6 +26,7 @@
 #include <list>
 #include <memory>
 #include <vector>
+#include <unordered_set>
 
 #include <SMDSAbs_ElementType.hxx>
 #include <SMESH_Version.h>
@@ -99,7 +100,7 @@ public:
     /// retrieving by solid
     std::set<int> getNodesBySolid(const TopoDS_Solid& solid) const;
     /// retrieving by face
-    std::set<int> getNodesByFace(const TopoDS_Face& face) const;
+    std::unordered_set<int> getNodesByFace(const TopoDS_Face& face) const;
     /// retrieving by edge
     std::set<int> getNodesByEdge(const TopoDS_Edge& edge) const;
     /// retrieving by vertex

@@ -69,6 +69,8 @@
 #include <Base/TimeInfo.h>
 #include <Base/Writer.h>
 #include <Mod/Mesh/App/Core/Iterator.h>
+#include <omp.h>
+#include <iostream>
 
 #include "FemMesh.h"
 #include <FemMeshPy.h>
@@ -624,7 +626,7 @@ std::set<long> FemMesh::getSurfaceNodes(long /*ElemId*/, short /*FaceId*/, float
 std::list<std::pair<int, int>> FemMesh::getVolumesByFace(const TopoDS_Face& face) const
 {
     std::list<std::pair<int, int>> result;
-    std::set<int> nodes_on_face = getNodesByFace(face);
+    auto nodes_on_face = getNodesByFace(face);
 
     // SMDS_MeshVolume::facesIterator() is broken with SMESH7 as it is impossible
     // to iterate volume faces
@@ -692,7 +694,7 @@ std::list<int> FemMesh::getFacesByFace(const TopoDS_Face& face) const
 {
     // TODO: This function is broken with SMESH7 as it is impossible to iterate volume faces
     std::list<int> result;
-    std::set<int> nodes_on_face = getNodesByFace(face);
+    auto nodes_on_face = getNodesByFace(face);
 
     SMDS_FaceIteratorPtr face_iter = myMesh->GetMeshDS()->facesIterator();
     while (face_iter->more()) {
@@ -759,7 +761,7 @@ std::list<int> FemMesh::getEdgesByEdge(const TopoDS_Edge& edge) const
 std::map<int, int> FemMesh::getccxVolumesByFace(const TopoDS_Face& face) const
 {
     std::map<int, int> result;
-    std::set<int> nodes_on_face = getNodesByFace(face);
+    auto nodes_on_face = getNodesByFace(face);
 
     static std::map<int, std::vector<int>> elem_order;
     if (elem_order.empty()) {
@@ -894,9 +896,10 @@ std::set<int> FemMesh::getNodesBySolid(const TopoDS_Solid& solid) const
     return result;
 }
 
-std::set<int> FemMesh::getNodesByFace(const TopoDS_Face& face) const
+std::unordered_set<int> FemMesh::getNodesByFace(const TopoDS_Face& face) const
 {
-    std::set<int> result;
+    std::vector<std::unordered_set<int>> results(omp_get_max_threads());
+    // std::set<int> result;
 
     Bnd_Box box;
     BRepBndLib::Add(
@@ -937,13 +940,23 @@ std::set<int> FemMesh::getNodesByFace(const TopoDS_Face& face) const
                 continue;
             }
 
-            if (measure.Value() < limit)
-#pragma omp critical
-            {
-                result.insert(aNode->GetID());
+            if (measure.Value() < limit) {
+                results[omp_get_thread_num()].insert(aNode->GetID());
             }
+            // #pragma omp critical
+            // {
+            //     result.insert(aNode->GetID());
+            // }
         }
     }
+    std::unordered_set<int> result;
+    for (auto& res : results) {
+        result.merge(res);
+    }
+    for (auto& m_res: result) {
+        std::cout << m_res << " ";
+    }
+    std::cout << std::endl;
 
     return result;
 }

@@ -1092,7 +1092,7 @@ PyObject* FemMeshPy::getNodesByFace(PyObject* args)
             return nullptr;
         }
         Py::List ret;
-        std::set<int> resultSet = getFemMeshPtr()->getNodesByFace(fc);
+        auto resultSet = getFemMeshPtr()->getNodesByFace(fc);
         for (int it : resultSet) {
             ret.append(Py::Long(it));
         }

@@ -182,7 +182,10 @@ def get_femelement_faces_table(
     if not faces_only:
         faces_only = femmesh.FacesOnly
     for i in faces_only:
-        table[i] = femmesh.getElementNodes(i)
+        r = femmesh.getElementNodes(i)
+        print(f"FEMMESH GET ELEMENT NODES{r = }")
+        table[i] = r
+        # table[i] = femmesh.getElementNodes(i)
     return table
 
 
