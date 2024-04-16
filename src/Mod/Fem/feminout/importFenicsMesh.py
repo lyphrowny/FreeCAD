@@ -46,9 +46,6 @@ if FreeCAD.GuiUp:
 
 
 # Template copied from importZ88Mesh.py. Thanks Bernd!
-# ********* generic FreeCAD import and export methods *********
-
-
 if FreeCAD.GuiUp:
     class WriteXDMFTaskPanel:
         """
@@ -142,6 +139,7 @@ if FreeCAD.GuiUp:
             FreeCADGui.Control.closeDialog()
 
 
+# ********* generic FreeCAD import and export methods *********
 def open(filename):
     "called when freecad opens a file"
     docname = os.path.splitext(os.path.basename(filename))[0]

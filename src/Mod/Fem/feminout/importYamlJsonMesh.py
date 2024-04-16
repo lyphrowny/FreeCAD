@@ -53,10 +53,6 @@ except ImportError:
 # ********* generic FreeCAD import and export methods ************************
 # names are fix given from FreeCAD, these methods are called from FreeCAD
 # they are set in FEM modules Init.py
-
-
-
-
 def open(
     filename
 ):

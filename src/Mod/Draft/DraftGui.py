@@ -131,7 +131,12 @@ class DraftTaskPanel:
         else:
             self.form = widget
     def getStandardButtons(self):
-        return QtWidgets.QDialogButtonBox.Close.value
+        try:
+            # pyside2
+            return int(QtWidgets.QDialogButtonBox.Close)
+        except TypeError:
+            # pyside6
+            return QtWidgets.QDialogButtonBox.Close.value
     def accept(self):
         if hasattr(FreeCADGui,"draftToolBar"):
             return FreeCADGui.draftToolBar.validatePoint()

@@ -41,9 +41,6 @@ EIGENVALUE_OUTPUT_SECTION = "     E I G E N V A L U E   O U T P U T"
 
 
 # ********* generic FreeCAD import and export methods *********
-
-
-
 def open(
     filename
 ):

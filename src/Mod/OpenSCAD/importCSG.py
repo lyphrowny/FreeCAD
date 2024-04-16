@@ -34,6 +34,7 @@ printverbose = False
 
 import io
 import os
+from builtins import open as pyopen
 
 import xml.sax
 
@@ -64,7 +65,6 @@ original_root_objects = []
 # Get the token map from the lexer. This is required.
 import tokrules
 from tokrules import tokens
-from builtins import open as pyopen
 
 translate = FreeCAD.Qt.translate
 

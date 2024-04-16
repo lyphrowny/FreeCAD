@@ -39,9 +39,6 @@ from builtins import open as pyopen
 
 
 # ********* generic FreeCAD import and export methods *********
-
-
-
 def open(filename):
     "called when freecad opens a file"
     docname = os.path.splitext(os.path.basename(filename))[0]
