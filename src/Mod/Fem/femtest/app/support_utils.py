@@ -294,9 +294,16 @@ def compare_inp_files(
 
     diff_lines = difflib.unified_diff(lf1, lf2, n=0)
 
+    dl = list(diff_lines)
+    diff_lines = iter(dl)
+
     bad_lines = parse_diff(diff_lines)
+    from pathlib import Path
+    if Path(file_name1).stem == "material_multiple_bendingbeam_fiveboxes":
+        print(f"{bad_lines = }, \n\n{diff_lines = }")
+        return f"Comparing {file_name1} to {file_name2} (not actually) failed!\n{''.join(bad_lines)}\n\n{''.join(dl)}"
     if bad_lines:
-        return f"Comparing {file_name1} to {file_name2} failed!\n{''.join(bad_lines)}"
+        return f"Comparing {file_name1} to {file_name2} failed!\n{''.join(bad_lines)}\n\n{''.join(dl)}"
 
 
 def compare_files(
